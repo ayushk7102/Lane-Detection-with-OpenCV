@@ -4,7 +4,6 @@ import matplotlib.pyplot as plt
 import os
 
 
-
 def canny(f):
 	gray = cv.cvtColor(f, cv.COLOR_BGR2GRAY)
 
@@ -33,8 +32,17 @@ def display_lines(f, lines):
 		return line_img
 
 def make_coords(img, line_params):
+	global prev_line_params
+	if(np.isnan(np.sum(line_params))):
+		line_params = prev_line_params
 	print(line_params)
-	m, b = line_params
+	if line_params.size == 2: 
+		m, b = line_params
+
+		prev_line_params = np.copy(line_params)
+	else:
+		m, b = prev_line_params
+
 	y1 = img.shape[0]
 	y2 = int(y1*(3/5))
 
@@ -78,7 +86,7 @@ cv.destroyAllWindows()
 cv.waitKey(8)
 
 cap = cv.VideoCapture('/home/ayush/Desktop/Manas/OpenCV/Lane Detection/challenge_video.mp4')
-
+frameCount  = 0
 while cap.isOpened():
 	ret, f = cap.read()
 	#f = cv.imread('/home/ayush/Desktop/Manas/OpenCV/Lane Detection/sample frame.png')
@@ -94,7 +102,7 @@ while cap.isOpened():
 
 	cropd = roi(canny)
 
-	lines = cv.HoughLinesP(cropd, 2, np.pi/180, 100, np.array([]), minLineLength=40, maxLineGap=5)
+	lines = cv.HoughLinesP(cropd, 2, np.pi/180, 100, np.array([]), minLineLength=50, maxLineGap=5)
 
 	avg_lines = average_lines(pre_lanes, lines)
 
@@ -104,13 +112,15 @@ while cap.isOpened():
 
 	#cv.imshow("winname", line_img)
 	combined = cv.addWeighted(pre_lanes, 0.8, line_img, 1, 1)
+	frameCount+=1
 
+	print(frameCount)
+	
 
 	cv.imshow("result", combined)
 	if cv.waitKey(2) & 0xFF == ord('q'):
 	 	break
-	#plt.show()
-
 
 cap.release()
 cv.destroyAllWindows()
+
