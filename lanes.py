@@ -17,6 +17,7 @@ def canny(f):
 def roi(f):
 	ht = f.shape[0]
 	polys = np.array([[(130, ht-40), (1100, ht-40), (704, 422)]])
+	polys = np.array([[(130, ht-40), (1100, ht-40), (743, 433), (652, 420)]])
 	mask = np.zeros_like(f)
 	cv.fillPoly(mask, polys, 255)
 	masked_img = cv.bitwise_and(f, mask) 
@@ -101,7 +102,8 @@ while cap.isOpened():
 	canny = cv.Canny(blur, 50, 150)
 
 	cropd = roi(canny)
-
+	#plt.imshow(cropd)
+	#plt.show()
 	lines = cv.HoughLinesP(cropd, 2, np.pi/180, 100, np.array([]), minLineLength=50, maxLineGap=5)
 
 	avg_lines = average_lines(pre_lanes, lines)
@@ -118,7 +120,7 @@ while cap.isOpened():
 	
 
 	cv.imshow("result", combined)
-	if cv.waitKey(2) & 0xFF == ord('q'):
+	if cv.waitKey(5) & 0xFF == ord('q'):
 	 	break
 
 cap.release()
