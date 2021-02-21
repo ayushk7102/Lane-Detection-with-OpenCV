@@ -33,6 +33,7 @@ def display_lines(f, lines):
 		return line_img
 
 def make_coords(img, line_params):
+	print(line_params)
 	m, b = line_params
 	y1 = img.shape[0]
 	y2 = int(y1*(3/5))
@@ -59,7 +60,9 @@ def average_lines(pre_lanes, lines):
 			right_fit.append((slope, intercept))
 
 	left_fit_avg = np.average(left_fit, axis=0)
+
 	right_fit_avg = np.average(right_fit, axis=0)
+
 
 
 	left_line = make_coords(pre_lanes, left_fit_avg)
